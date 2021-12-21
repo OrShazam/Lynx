@@ -257,7 +257,7 @@ INT Injector::ExecuteDll(bool bWait, bool bDetach) {
 		}
 
 		if (bDetach)
-			::VirtualFreeEx(this->payload->hProcess, this->payload->lpAddress, pinh->OptionalHeader.SizeOfImage, MEM_RELEASE);
+			::VirtualFreeEx(this->payload->hProcess, this->payload->lpAddress, 0, MEM_RELEASE);
 	}
 
 	return dwExitCode;
