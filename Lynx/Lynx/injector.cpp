@@ -12,14 +12,15 @@ bool Injector::GetProcess() {
 	HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
 
 	if (::Process32First(hSnapshot, &pe32)) {
-		while (::Process32Next(hSnapshot, &pe32)) {
+		do {
 			if (wcsicmp(pe32.szExeFile, this->szProcessName.c_str()) == 0) {
 				HANDLE hProcess = ::OpenProcess(PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION, FALSE, pe32.th32ProcessID);
 				::CloseHandle(hSnapshot);
 				this->payload->hProcess = hProcess;
 				return true;
 			}
-		}
+			
+		} while (::Process32Next(hSnapshot, &pe32));
 	} else
 		return ::CloseHandle(hSnapshot), false;
 
