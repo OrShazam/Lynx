@@ -206,7 +206,7 @@ bool Injector::InjectPayload() {
 		return Debug(L"Signature error\n"), false;
 
 	// allocate space in target process
-	this->payload->lpAddress = ::VirtualAllocEx(this->payload->hProcess, NULL, pinh->OptionalHeader.SizeOfImage, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	this->payload->lpAddress = ::VirtualAllocEx(this->payload->hProcess,  pinh->OptionalHeader.ImageBase, pinh->OptionalHeader.SizeOfImage, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 	if (!this->payload->lpAddress)
 		return Debug(L"Failed to allocate space: %lu\n", GetLastError()), false;
 
@@ -218,8 +218,10 @@ bool Injector::InjectPayload() {
 	// base relocate
 	// get delta offset of image bases
 	DWORD dwDelta = reinterpret_cast<DWORD>(this->payload->lpAddress) - pinh->OptionalHeader.ImageBase;
-	if (!BaseRelocate(reinterpret_cast<LPVOID>(this->vPayloadData.data()), pinh, dwDelta))
-		return Debug(L"Failed to relocate base: %lu\n", GetLastError()), false;
+	if (dwDelta != 0){
+		if (!BaseRelocate(reinterpret_cast<LPVOID>(this->vPayloadData.data()), pinh, dwDelta))
+			return Debug(L"Failed to relocate base: %lu\n", GetLastError()), false;	
+	}
 
 	// copy to process
 	//if (!CopyHeadersAndSections(this->payload->hProcess, pidh, pinh))
