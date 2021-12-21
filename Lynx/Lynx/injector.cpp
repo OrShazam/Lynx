@@ -113,7 +113,6 @@ bool Injector::RebuildImportTable(LPVOID lpBaseAddress, PIMAGE_NT_HEADERS pinh) 
 					*(FARPROC *)lpThunk = ::GetProcAddress(hLibModule, reinterpret_cast<LPCSTR>(&thunkData->Name));
 				}
 			}
-			::FreeLibrary(hLibModule);
 			// advance to next IMAGE_IMPORT_DESCRIPTOR
 			pImportDescriptor++;
 		}
